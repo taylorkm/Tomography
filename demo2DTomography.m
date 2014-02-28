@@ -1,12 +1,22 @@
 % Create the square image, and get arrays ii and jj that have the relative
 % coordinates.
 nperdim = 128;
-xrng = linspace(-2, 2, nperdim);
-yrng = linspace(-2, 2, nperdim);
-[x1,x2] = meshgrid(xrng, yrng);
-x = [x1(:), x2(:)];
-f = max(abs(x), [], 2) <= 1;
-f = phantom(nperdim);
+imageType = 'phantom';
+if strcmp(imageType,'phantom')
+    f = phantom(nperdim);
+elseif strcmp(imageType,'square')
+    xrng = linspace(-2, 2, nperdim);    
+    yrng = linspace(-2, 2, nperdim);
+    [x1,x2] = meshgrid(xrng, yrng);
+    x = [x1(:), x2(:)];
+    f = max(abs(x), [], 2) <= 1;% & abs(x(:,1))<.5;
+end
+
+figure
+imagesc(reshape(f,nperdim,nperdim))
+colormap gray
+title('Original Image')
+
 
 % coordinates of centers in x1x2-plane
 [ii,jj] = meshgrid(1:nperdim, 1:nperdim);
@@ -16,7 +26,7 @@ coords = [ii(:),jj(:)];
 rads = sqrt(sum(coords.^2,2)); % radius of each coord from origin
 maxrad = max(rads);
 
-nTheta = 100;
+nTheta = 180;
 thetas = pi*(0:nTheta-1)/nTheta;
 nBins = ceil(1.45*nperdim);
 
@@ -52,7 +62,7 @@ imagesc(R)
 colormap hot
 title('Radon Transform')
 
-
+% TODO: filter R before back projection
 
 dtheta = abs(thetas(2)-thetas(1));
 
